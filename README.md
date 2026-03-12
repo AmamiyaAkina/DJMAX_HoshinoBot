@@ -11,7 +11,7 @@ DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
 * 数据来源：V-Archive
 ---
 ## 生成分表图示例
-<img width="3080" height="4693" src="https://github.com/user-attachments/assets/6fc3e532-f5cd-47f0-832f-a75d5e6f2980" />
+![preview](https://github.com/user-attachments/assets/6fc3e532-f5cd-47f0-832f-a75d5e6f2980)
 
 ---
 
