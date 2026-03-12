@@ -1,0 +1,3 @@
+[submodule "deps/deps/djmax_bests_generate"]
+	path = deps/deps/djmax_bests_generate
+	url = https://github.com/SoreHait/djmax_bests_generate.git
