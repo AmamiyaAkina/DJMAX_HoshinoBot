@@ -19,17 +19,18 @@ DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
 
 本项目依赖 `git submodule`。
 
-推荐使用以下方式克隆：
-
+在`modules`目录下克隆本仓库项目：
 ```
 git clone --recurse-submodules https://github.com/AmamiyaAkina/DJMAX_HoshinoBot.git
 ```
 
-如果已经 clone 过仓库，可以执行：
+如果已经`clone`过仓库，可以执行：
 
 ```
 git submodule update --init --recursive
 ```
+
+并在`__bot__.py`的`module`中添加`DJMAX_HoshinoBot`
 
 ---
 
