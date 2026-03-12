@@ -52,6 +52,14 @@ djmax Amamiya_Akina 4
 
 ---
 
+## 注意事项
+在机器人第一次运行的时候，会在生成分表之前缓存DJMAX每首歌的曲绘，建议在第一次查分之前提前运行一遍预缓存脚本
+```
+cd deps/djmax_bests_generate
+python prefetch_covers.py
+```
+---
+
 ## 依赖项目
 本项目使用以下开源项目：<br>
 
