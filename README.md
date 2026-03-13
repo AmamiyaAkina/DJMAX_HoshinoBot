@@ -6,8 +6,7 @@ DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
 ---
 ## 功能
 * 查询 **DJMAX Respect V** 玩家成绩
-* 指令生成 **Bests 分表图片**
-* 支持 **4 / 5 / 6 / 8 键模式**
+* 指令生成**4 / 5 / 6 / 8b **的**Best100 分表图片**
 * 数据来源：V-Archive
 ---
 ## 生成分表图示例
@@ -85,6 +84,8 @@ python prefetch_covers.py
 
 * QQ 账号绑定 V-Archive
 * 指令优化
+* 同步更新`djmax_bests_generate`的一些其他出图指令
+* 撰写V-Archive与VArchiveMacro的传分教程
 
 ---
 
