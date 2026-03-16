@@ -3,7 +3,7 @@
 # 代码级教学：SoreHait
 
 from nonebot import on_command, CommandSession
-from hoshino.modules.DJMAX_HoshinoBot.djmax_bests_generate.djmax_bests import generate
+from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import generate
 from hoshino.config import RES_DIR
 from hoshino import R
 import os
@@ -16,7 +16,7 @@ async def djmax(session: CommandSession):
     get_id = session.get('id')
     get_keys = session.get('keys')
     img = await generate.generate_bests(get_id, get_keys)
-    img.save(os.path.join(imgpath, f"{get_id}.png"))
+    img.save(os.path.join(imgpath, f"{get_id}_b100.png"))
     img_cqcode = R.img(f"djmax/{get_id}.png").cqcode
     await session.send(img_cqcode)
 
