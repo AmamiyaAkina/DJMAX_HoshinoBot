@@ -12,6 +12,8 @@ DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
 ## 生成分表图示例
 <p align="center">
   <img src="https://github.com/user-attachments/assets/6fc3e532-f5cd-47f0-832f-a75d5e6f2980" />
+
+  <img src="https://github.com/user-attachments/assets/d0cb3540-8976-4556-88b4-32763e66ec4f" />
 </p>
 
 ---
@@ -37,32 +39,43 @@ git submodule update --remote
 
 ## 使用方法
 
-### 查分指令：
+### Bests100 查分指令：
 
 ```
-djmax <V-Archive ID> <4/5/6/8>
-```
-
-### 示例：
-```
-djmax Amamiya_Akina 4
+djmax <V-Archive ID> b100 <4/5/6/8>
 ```
 机器人会返回对应键位的 **Bests 分表图**。并且同时会在**第一次自动绑定该QQ号**。后续查分可直接输入：
-
 ```
-djmax 4
+djmax b100 4
 ```
 
-## 绑定与解绑
 
-### 手动绑定
+### 指定难度分表查分指令
+
+#### 普通难度：
 ```
-djmax_bind <V-Archive ID>
+djmax <V-Archive ID> list 4 9
+```
+#### SC难度：
+```
+djmax <V-Archive ID> list 4 sc9
+```
+机器人会返回对应键位的 **指定难度分表图**。并且同时会在**第一次自动绑定该QQ号**。后续查分可直接输入：
+```
+djmax list 4 sc9
+```
+
+
+### 绑定与解绑
+
+#### 手动绑定
+```
+djmax bind <V-Archive ID>
 ```
 
 ### 解绑
 ```
-djmax_unbind
+djmax unbind
 ```
 ---
 
@@ -85,6 +98,9 @@ python prefetch_covers.py
 
 ## 更新日志
 
+### 2026-05-18
+* 更新了`generate_scorelist`指定难度分表查分的功能
+
 ### 2026-05-06
 * 纠正并优化了一些命名上的低级错误，并加入了绑定QQ号功能
 
@@ -99,7 +115,7 @@ python prefetch_covers.py
 
 * ~~QQ 账号绑定 V-Archive~~
 * 指令优化
-* 同步更新`djmax_bests_generate`的一些其他出图指令
+* 同步更新`djmax_bests_generate`的一些其他出图指令（在更了在更了）
 * 撰写V-Archive与VArchiveMacro的传分教程
 
 ---
