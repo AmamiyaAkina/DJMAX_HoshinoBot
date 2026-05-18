@@ -85,7 +85,7 @@ async def generate_bests(session: CommandSession, get_id: str, get_keys: int):
     except Exception as e:
         error_msg = str(e)
         if "ConnectTimeout" in error_msg or "Connection" in error_msg:
-            await session.send("❌ **连接超时**：无法连接到 DJMax 服务器，请检查网络或稍后再试。")
+            await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
         else:
             await session.send(f"❌ 出图失败：{error_msg}")
 
@@ -109,7 +109,7 @@ async def generate_scorelist(session: CommandSession, get_id: str, get_keys: int
     except Exception as e:
         error_msg = str(e)
         if "ConnectTimeout" in error_msg or "Connection" in error_msg:
-            await session.send("❌ **连接超时**：无法连接到 DJMax 服务器，请检查网络或稍后再试。")
+            await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
         else:
             await session.send(f"❌ 出图失败：{error_msg}")
 
