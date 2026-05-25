@@ -108,6 +108,10 @@ python prefetch_covers.py
 
 ## 更新日志
 
+### 2026-05-25
+* 更新了`generate_scorelist_pack`指定曲包与难度查分的功能
+* 更新了`send_dlc_list`发送全部曲包列表的功能
+
 ### 2026-05-18
 * 更新了`generate_scorelist`指定难度分表查分的功能
 
