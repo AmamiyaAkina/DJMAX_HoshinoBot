@@ -8,13 +8,14 @@ DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
 * 查询 **DJMAX Respect V** 玩家成绩
 * 生成**4 / 5 / 6 / 8b **的**Bests 100**分表图片
 * 生成指定难度的所有曲目的分表图片
+* 生成指定曲包难度的所有曲目的分表图片
 * 数据来源：V-Archive
 ---
 ## 生成分表图示例
 <p align="center">
   <img src="https://github.com/user-attachments/assets/6fc3e532-f5cd-47f0-832f-a75d5e6f2980" />
-
   <img src="https://github.com/user-attachments/assets/d0cb3540-8976-4556-88b4-32763e66ec4f" />
+  <img src="https://github.com/user-attachments/assets/afb051d4-c48e-4413-9edf-c71fe1b2f622" />
 </p>
 
 ---
