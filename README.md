@@ -40,12 +40,12 @@ git submodule update --remote
 
 ## 使用方法
 
-### Bests100 查分指令：
+### Best100 查分指令：
 
 ```
 djmax <V-Archive ID> b100 <4/5/6/8>
 ```
-机器人会返回对应键位的 **Bests 分表图**。并且同时会在**第一次自动绑定该QQ号**。后续查分可直接输入：
+机器人会返回对应键位的 **Best100分表图**。并且同时会在**第一次自动绑定该QQ号**。后续查分可直接输入：
 ```
 djmax b100 4
 ```
@@ -65,6 +65,15 @@ djmax <V-Archive ID> list 4 sc9
 ```
 djmax list 4 sc9
 ```
+### 指定曲包查分指令
+
+```
+djmax <V-Archive ID> pack 4 <NM/HD/MX/SC> <曲包ID>
+```
+查找曲包列表指令
+```
+djmax listdlc
+```
 
 
 ### 绑定与解绑
@@ -73,8 +82,7 @@ djmax list 4 sc9
 ```
 djmax bind <V-Archive ID>
 ```
-
-### 解绑
+#### 解绑
 ```
 djmax unbind
 ```
