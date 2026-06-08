@@ -87,6 +87,9 @@ djmax bind <V-Archive ID>
 ```
 djmax unbind
 ```
+
+以上指令相关帮助均可输入`djmax help`查阅
+
 ---
 
 ## 注意事项
@@ -107,6 +110,9 @@ python prefetch_covers.py
 ---
 
 ## 更新日志
+
+### 2026-06-08
+* 更新了`djmax help`指令
 
 ### 2026-05-25
 * 更新了`generate_scorelist_pack`指定曲包与难度查分的功能
