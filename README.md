@@ -134,7 +134,7 @@ python prefetch_covers.py
 ## 未来计划
 
 * ~~QQ 账号绑定 V-Archive~~
-* 指令优化
+* ~~指令优化~~
 * 同步更新`djmax_bests_generate`的一些其他出图指令（在更了在更了）
 * 撰写V-Archive与VArchiveMacro的传分教程
 
