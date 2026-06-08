@@ -111,8 +111,9 @@ python prefetch_covers.py
 
 ## 更新日志
 
-### 2026-06-08
-* 更新了`djmax help`指令
+~~### 2026-06-08~~
+~~* 更新了`djmax help`指令~~
+本次更新导致了部分功能不可用，故已撤回
 
 ### 2026-05-25
 * 更新了`generate_scorelist_pack`指定曲包与难度查分的功能
