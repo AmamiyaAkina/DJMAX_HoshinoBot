@@ -1,8 +1,9 @@
 from nonebot import on_command, CommandSession
 # 导入两个核心的出图函数
-from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import generate, api_handler
+from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import generate
+from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import api_handler
 from hoshino.config import RES_DIR
-from hoshino import R, Service
+from hoshino import R
 import os
 import json
 import re # 引入正则表达式模块，用于解析 sc15 这种格式
@@ -10,7 +11,6 @@ import re # 引入正则表达式模块，用于解析 sc15 这种格式
 # --- 🛠️ 配置与常量定义 ---
 DATA_PATH = os.path.join(os.path.dirname(__file__), 'djmax_bind_data.json')
 imgpath = os.path.join(os.path.expanduser(RES_DIR), 'img', 'djmax')
-sv = Service('djmax')
 
 CMD_BIND = 'bind'
 CMD_UNBIND = 'unbind'
@@ -18,62 +18,8 @@ CMD_BESTS = 'b100'   # 修改：B100 现在作为明确的功能关键词
 CMD_LIST = 'list'    # 新增：分表查询的功能关键词
 CMD_PACK = 'pack'
 CMD_LISTDLC = 'listdlc'
-CMD_HELP = 'help'
 
 VALID_BMODES = [4, 5, 6, 8]
-
-DJMAX_HELP_ITEMS = [
-    {
-        'command': 'djmax help',
-        'feature': '查看全部指令与功能说明',
-    },
-    {
-        'command': 'djmax bind [ID]',
-        'feature': '绑定你的 DJMAX ID，后续可直接使用已绑定 ID',
-    },
-    {
-        'command': 'djmax unbind',
-        'feature': '解除当前 QQ 账号绑定的 DJMAX ID',
-    },
-    {
-        'command': 'djmax [ID] b100 [4/5/6/8]',
-        'feature': '生成对应键数的 B100 结果图',
-    },
-    {
-        'command': 'djmax [ID] list [4/5/6/8] [等级|sc等级]',
-        'feature': '按指定键数和等级生成分表查询图',
-    },
-    {
-        'command': 'djmax [ID] pack [4/5/6/8] [SC/NM/HD/MX] [dlcCode]',
-        'feature': '按曲包代码生成指定难度的曲包分表图',
-    },
-    {
-        'command': 'djmax listdlc',
-        'feature': '获取当前可用的曲包代码列表',
-    },
-]
-
-
-def _build_djmax_help_text():
-    help_text = '【DJMAX 子命令】\n'
-    help_text += '\n'.join([f'- {item["command"]}' for item in DJMAX_HELP_ITEMS])
-    help_text += '\n\n【对应功能】\n'
-    help_text += '\n'.join([f'- {item["feature"]}' for item in DJMAX_HELP_ITEMS])
-    return help_text
-
-
-sv.help = _build_djmax_help_text()
-
-
-def _build_djmax_help_text():
-    help_text = '【DJMAX 子命令】\n'
-    help_text += '\n'.join([f'- {item["command"]}' for item in DJMAX_HELP_ITEMS])
-    help_text += '\n\n【对应功能】\n'
-    help_text += '\n'.join([f'- {item["feature"]}' for item in DJMAX_HELP_ITEMS])
-    return help_text
-
-
-sv.help = _build_djmax_help_text()
 
 # --- 读写 JSON 工具函数 ---
 def _load_data():
@@ -88,7 +34,6 @@ def _load_data():
 def _save_data(data):
     with open(DATA_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-
 
 # --- 子功能实现区 (便于后续维护扩展) ---
 
@@ -208,22 +153,8 @@ async def send_dlc_list(session: CommandSession):
     except Exception as e:
         await session.send(f'❌ 获取曲包列表失败：{e}')
 
-
-# 7. 帮助信息发送
-async def send_help(session: CommandSession):
-    try:
-        help_text = '【DJMAX 子命令】\n'
-        help_text += '\n'.join([f'- {item["command"]}' for item in DJMAX_HELP_ITEMS])
-        help_text += '\n\n【对应功能】\n'
-        help_text += '\n'.join([f'- {item["feature"]}' for item in DJMAX_HELP_ITEMS])
-
-        print('[DJMAX] help_text =', repr(help_text))
-        await session.send(help_text)
-    except Exception as e:
-        await session.send(f'❌ 发送帮助信息失败：{e}')
-
 # --- 主指令 ---
-@sv.on_fullmatch('djmax', only_to_me=False)
+@on_command('djmax', only_to_me=False)
 async def djmax(session: CommandSession):
     # 从 state 中获取解析好的意图和数据
     action = session.state.get('action')
@@ -252,13 +183,9 @@ async def djmax(session: CommandSession):
         )
     elif action == CMD_LISTDLC:
         await send_dlc_list(session)
-    elif action == 'help':
-        await send_help(session)
 
 # --- 智能参数解析器 ---
 # --- 🧠 智能参数解析器 (已修复 pack 指令及 ID 识别问题) ---
-
-
 @djmax.args_parser
 async def _(session: CommandSession):
     args = session.current_arg_text.strip().split()
@@ -281,9 +208,6 @@ async def _(session: CommandSession):
         return
     elif first_word == CMD_LISTDLC:
         session.state['action'] = CMD_LISTDLC
-        return
-    elif first_word == CMD_HELP:
-        session.state['action'] = CMD_HELP
         return
 
     # ---------------------------------------------------------
