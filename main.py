@@ -1,9 +1,8 @@
 from nonebot import on_command, CommandSession
 # 导入两个核心的出图函数
-from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import generate
-from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import api_handler
+from hoshino.modules.DJMAX_HoshinoBot.deps.djmax_bests_generate.djmax_bests import generate, api_handler
 from hoshino.config import RES_DIR
-from hoshino import R
+from hoshino import R, Service, priv, util
 import os
 import json
 import re # 引入正则表达式模块，用于解析 sc15 这种格式
@@ -18,8 +17,31 @@ CMD_BESTS = 'b100'   # 修改：B100 现在作为明确的功能关键词
 CMD_LIST = 'list'    # 新增：分表查询的功能关键词
 CMD_PACK = 'pack'
 CMD_LISTDLC = 'listdlc'
+CMD_HELP = 'help'
 
 VALID_BMODES = [4, 5, 6, 8]
+
+sv = Service('djmax')
+
+
+def build_help_text():
+    return (
+        "DJMAX 插件使用说明：\n"
+        "1. 绑定ID：djmax bind [ID]\n"
+        "2. 解绑ID：djmax unbind\n"
+        "3. 查询B100：djmax [ID] b100 [键数]\n"
+        "4. 查询分表：djmax [ID] list [键数] [等级]（等级前可加 sc 表示查询 SC 分表）\n"
+        "5. 查询曲包分表：djmax [ID] pack [键数] [难度] [曲包代码]\n"
+        "   - 难度支持 SC、NM、HD、MX\n"
+        "   - 曲包代码请使用 listdlc 指令查询获得\n"
+        "6. 获取曲包列表：djmax listdlc\n"
+        "注意：\n"
+        "1.绑定的ID为你的V-Archive注册时的ID，而不是DJMAX的ID\n"
+        "2.第一次出图成功后会自动绑定当前查询的ID，无需重复绑定，如果已绑定ID，查询B100和分表时可以省略ID，直接输入：djmax b100 [键数] 或 djmax list [键数] [等级]"
+    )
+
+
+sv.help = build_help_text()
 
 # --- 读写 JSON 工具函数 ---
 def _load_data():
@@ -153,6 +175,12 @@ async def send_dlc_list(session: CommandSession):
     except Exception as e:
         await session.send(f'❌ 获取曲包列表失败：{e}')
 
+# 7. 帮助信息
+async def send_help(session: CommandSession):
+    await session.send(build_help_text())
+
+
+
 # --- 主指令 ---
 @on_command('djmax', only_to_me=False)
 async def djmax(session: CommandSession):
@@ -183,6 +211,8 @@ async def djmax(session: CommandSession):
         )
     elif action == CMD_LISTDLC:
         await send_dlc_list(session)
+    elif action == CMD_HELP:
+        await send_help(session)   
 
 # --- 智能参数解析器 ---
 # --- 🧠 智能参数解析器 (已修复 pack 指令及 ID 识别问题) ---
@@ -208,6 +238,9 @@ async def _(session: CommandSession):
         return
     elif first_word == CMD_LISTDLC:
         session.state['action'] = CMD_LISTDLC
+        return
+    elif first_word == CMD_HELP:
+        session.state['action'] = CMD_HELP
         return
 
     # ---------------------------------------------------------
