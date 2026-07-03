@@ -147,6 +147,12 @@ python prefetch_covers.py
 * V-Archive
 * djmax_bests_generate
 
+## 友链DJMAX查分群
+如有需要，可加入该QQ群寻求查分相关帮助：
+```
+1079045512
+```
+
 推荐使用该工具以自动化捕获分表：
 * [VArchiveMacro](https://github.com/johypark97/VArchiveMacro.git)
 ---
