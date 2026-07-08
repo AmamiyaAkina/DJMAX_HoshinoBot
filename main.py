@@ -18,6 +18,9 @@ CMD_LIST = 'list'    # 新增：分表查询的功能关键词
 CMD_PACK = 'pack'
 CMD_LISTDLC = 'listdlc'
 CMD_HELP = 'help'
+CMD_NEW = 'new'      # 新增：新曲分表查询的功能关键词
+CMD_PP = 'pp'        # 新增：Perfect Play 分表查询的功能关键词
+CMD_MAX = 'max'      # 新增：理论值查询的功能关键词
 
 VALID_BMODES = [4, 5, 6, 8]
 
@@ -30,11 +33,14 @@ def build_help_text():
         "1. 绑定ID：djmax bind [ID]\n"
         "2. 解绑ID：djmax unbind\n"
         "3. 查询B100：djmax [ID] b100 [键数]\n"
-        "4. 查询分表：djmax [ID] list [键数] [等级]（等级前可加 sc 表示查询 SC 分表）\n"
-        "5. 查询曲包分表：djmax [ID] pack [键数] [难度] [曲包代码]\n"
+        "4. 查询指定难度：djmax [ID] list [键数] [等级]（等级前可加 sc 表示查询 SC 分表）\n"
+        "5. 查询曲包：djmax [ID] pack [键数] [难度] [曲包代码]\n"
         "   - 难度支持 SC、NM、HD、MX\n"
         "   - 曲包代码请使用 listdlc 指令查询获得\n"
-        "6. 获取曲包列表：djmax listdlc\n"
+        "6. 查询新曲：djmax [ID] new [键数] [难度]\n"
+        "7. 获取曲包列表：djmax listdlc\n"
+        "8. 查询Perfect Play分表：djmax [ID] pp [键数]\n"
+        "9. 查询理论值：djmax max [键数]\n"
         "注意：\n"
         "1.绑定的ID为你的V-Archive注册时的ID，而不是DJMAX的ID\n"
         "2.第一次出图成功后会自动绑定当前查询的ID，无需重复绑定，如果已绑定ID，查询B100和分表时可以省略ID，直接输入：djmax b100 [键数] 或 djmax list [键数] [等级]"
@@ -56,6 +62,21 @@ def _load_data():
 def _save_data(data):
     with open(DATA_PATH, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
+
+
+def _auto_bind_current_id(session: CommandSession, get_id: str):
+    qq = str(session.ctx['user_id'])
+    data = _load_data()
+    if data.get(qq) != get_id:
+        data[qq] = get_id
+        _save_data(data)
+
+
+def _format_scorelist_error(error_msg: str) -> str:
+    hint = '请确认您查询的该分表是否上传了曲目成绩'
+    if error_msg:
+        return f'❌ 出图失败：{error_msg}。{hint}'
+    return f'❌ 出图失败：{hint}'
 
 # --- 子功能实现区 (便于后续维护扩展) ---
 
@@ -112,7 +133,7 @@ async def generate_bests(session: CommandSession, get_id: str, get_keys: int):
         if "ConnectTimeout" in error_msg or "Connection" in error_msg:
             await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
         else:
-            await session.send(f"❌ 出图失败：{error_msg}")
+            await session.send(_format_scorelist_error(error_msg))
 
 # 4. 指定难度分表
 async def generate_scorelist(session: CommandSession, get_id: str, get_keys: int, is_sc: bool, level: int):
@@ -130,13 +151,16 @@ async def generate_scorelist(session: CommandSession, get_id: str, get_keys: int
         
         img_cqcode = R.img(f"djmax/{file_name}").cqcode
         await session.send(img_cqcode)
+
+        # 出图成功后静默自动绑定
+        _auto_bind_current_id(session, get_id)
         
     except Exception as e:
         error_msg = str(e)
         if "ConnectTimeout" in error_msg or "Connection" in error_msg:
             await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
         else:
-            await session.send(f"❌ 出图失败：{error_msg}")
+            await session.send(_format_scorelist_error(error_msg))
 
 # 5. 指定曲包分表
 async def generate_scorelist_pack(session: CommandSession, get_id: str, get_keys: int, get_diff:str ,get_pack: str):
@@ -151,6 +175,9 @@ async def generate_scorelist_pack(session: CommandSession, get_id: str, get_keys
         img_cqcode = R.img(f"djmax/{file_name}").cqcode
         await session.send(img_cqcode)
 
+        # 出图成功后静默自动绑定
+        _auto_bind_current_id(session, get_id)
+
 
 
     except Exception as e:
@@ -158,7 +185,7 @@ async def generate_scorelist_pack(session: CommandSession, get_id: str, get_keys
         if "ConnectTimeout" in error_msg or "Connection" in error_msg:
             await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
         else:
-            await session.send(f"❌ 出图失败：{error_msg}")
+            await session.send(_format_scorelist_error(error_msg))
 
 # 6. 发送全部曲包列表
 async def send_dlc_list(session: CommandSession):
@@ -175,7 +202,75 @@ async def send_dlc_list(session: CommandSession):
     except Exception as e:
         await session.send(f'❌ 获取曲包列表失败：{e}')
 
-# 7. 帮助信息
+# 7. 发送新曲分表
+async def generate_scorelist_new(session: CommandSession, get_id: str, get_keys: int, get_diff: str):
+    try:
+        img = await generate.generate_scorelist_new(get_id, get_keys, get_diff)
+        if not os.path.exists(imgpath):
+            os.makedirs(imgpath)
+
+        file_name = f"{get_id}_{get_keys}k_{get_diff}_new_list.png"
+        img.save(os.path.join(imgpath, file_name))
+
+        img_cqcode = R.img(f"djmax/{file_name}").cqcode
+        await session.send(img_cqcode)
+
+        # 出图成功后静默自动绑定
+        _auto_bind_current_id(session, get_id)
+
+    except Exception as e:
+        error_msg = str(e)
+        if "ConnectTimeout" in error_msg or "Connection" in error_msg:
+            await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
+        else:
+            await session.send(_format_scorelist_error(error_msg))
+
+
+# 8. 发送Perfect Play分表
+async def generate_scorelist_pp(session: CommandSession, get_id: str, get_keys: int):
+    try:
+        img = await generate.generate_scorelist_pp(get_id, get_keys)
+        if not os.path.exists(imgpath):
+            os.makedirs(imgpath)
+
+        file_name = f"{get_id}_{get_keys}k_pp.png"
+        img.save(os.path.join(imgpath, file_name))
+
+        img_cqcode = R.img(f"djmax/{file_name}").cqcode
+        await session.send(img_cqcode)
+
+        # 出图成功后静默自动绑定
+        _auto_bind_current_id(session, get_id)
+
+    except Exception as e:
+        error_msg = str(e)
+        if "ConnectTimeout" in error_msg or "Connection" in error_msg:
+            await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
+        else:
+            await session.send(f"❌ 出图失败：{error_msg}")
+
+# 9. 发送理论值列表
+async def generate_bests_theoretical(session: CommandSession, get_keys: int):
+    try:
+        img = await generate.generate_bests_theoretical(get_keys)
+        if not os.path.exists(imgpath):
+            os.makedirs(imgpath)
+
+        file_name = f"theoretical_{get_keys}k_b100.png"
+        img.save(os.path.join(imgpath, file_name))
+
+        img_cqcode = R.img(f"djmax/{file_name}").cqcode
+        await session.send(img_cqcode)
+
+    except Exception as e:
+        error_msg = str(e)
+        if "ConnectTimeout" in error_msg or "Connection" in error_msg:
+            await session.send("❌ **连接超时**：无法连接到 DJMAX 服务器，请检查网络或稍后再试。")
+        else:
+            await session.send(f"❌ 出图失败：{error_msg}")
+
+
+# 10. 帮助信息
 async def send_help(session: CommandSession):
     await session.send(build_help_text())
 
@@ -209,10 +304,22 @@ async def djmax(session: CommandSession):
                                       session.state.get('get_diff'),
                                       session.state.get('get_pack')
         )
+    elif action == 'new':
+        await generate_scorelist_new(session, 
+                                 session.state.get('get_id'), 
+                                 session.state.get('get_keys'), 
+                                 session.state.get('get_diff'))   
+    elif action == 'pp':
+        await generate_scorelist_pp(session,
+                                   session.state.get('get_id'),
+                                   session.state.get('get_keys'))
+    elif action == 'max':
+        await generate_bests_theoretical(session, 
+                                         session.state.get('get_keys'))
     elif action == CMD_LISTDLC:
         await send_dlc_list(session)
     elif action == CMD_HELP:
-        await send_help(session)   
+        await send_help(session)
 
 # --- 智能参数解析器 ---
 # --- 🧠 智能参数解析器 (已修复 pack 指令及 ID 识别问题) ---
@@ -242,7 +349,6 @@ async def _(session: CommandSession):
     elif first_word == CMD_HELP:
         session.state['action'] = CMD_HELP
         return
-
     # ---------------------------------------------------------
     # 2. 核心业务指令解析
     # ---------------------------------------------------------
@@ -254,7 +360,7 @@ async def _(session: CommandSession):
     # 步骤 A: 提取开头的 ID (如果存在且不是关键词)
     start_idx = 0
     # ⚠️ 修复点1：在这里加上 CMD_PACK，防止 pack 被误判为 ID
-    if first_word not in [CMD_BESTS, CMD_LIST, CMD_PACK]:
+    if first_word not in [CMD_BESTS, CMD_LIST, CMD_PACK, CMD_NEW, CMD_PP, CMD_MAX]:
         get_id = args[0]
         start_idx = 1
     
@@ -380,10 +486,35 @@ async def _(session: CommandSession):
         session.state['get_keys'] = get_keys
         session.state['get_diff'] = get_diff
         session.state['get_pack'] = get_pack
-        
+
+    elif keyword == CMD_NEW:
+        target_action = CMD_NEW
+
+        remaining_args = args[next_idx:]
+        if len(remaining_args) < 1:
+            await session.send('❌ 新曲分表缺少难度参数。请使用：djmax [ID] new 4 MX')
+            session.state['action'] = None
+            return
+
+        get_diff = remaining_args[0].upper()
+        if get_diff not in ['SC', 'NM', 'HD', 'MX']:
+            await session.send('❌ 难度格式错误。请使用 SC、NM、HD 或 MX。')
+            session.state['action'] = None
+            return
+
+        session.state['get_id'] = get_id
+        session.state['get_keys'] = get_keys
+        session.state['get_diff'] = get_diff
+
+    elif keyword == CMD_PP:
+        target_action = CMD_PP
+        session.state['get_id'] = get_id
+        session.state['get_keys'] = get_keys
+    elif keyword == CMD_MAX:
+        target_action = CMD_MAX
+        session.state['get_keys'] = get_keys
     else:
-        await session.send(f'❌ 未知的指令关键词 `{keyword}`。目前支持: b100, list, pack')
+        await session.send(f'❌ 未知的指令关键词 `{keyword}`。目前支持: b100, list, new, pack, pp')
         target_action = None
 
     session.state['action'] = target_action
-    return
