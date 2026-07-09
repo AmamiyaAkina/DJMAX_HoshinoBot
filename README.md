@@ -1,7 +1,7 @@
 # DJMAX_HoshinoBot
 
 DJMAX Respect V 查分插件，适用于 **HoshinoBot / Nonebot**。
-数据来源于 [`V-Archive`](https://v-archive.net/)，可以生成玩家 **Best100 分表图**。
+数据来源于 [`V-Archive`](https://v-archive.net/)，可以生成玩家，支持分表成绩出图功能。
 
 ---
 ## 功能
